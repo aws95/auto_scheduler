@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Form from "../automate/form";
+import MyCalander from "../automate/calander";
 import Footer from "./footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
@@ -77,7 +77,7 @@ export default class Content extends Component {
           </nav>
 
           <div className="wrapper container-fluid">
-            <Form />
+            <MyCalander />
             {/**/}
           </div>
         </div>
