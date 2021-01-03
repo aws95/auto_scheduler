@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import "./popup.css";
 import PropTypes from "prop-types";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { ErrorMessage } from "@hookform/error-message";
@@ -10,8 +10,11 @@ import { connect } from "react-redux";
 import { addPosts } from "../../actions/postActions";
 import "react-datepicker/dist/react-datepicker.css";
 import "./errorMessage.scss";
+import fr from "date-fns/locale/fr";
 
-export default function MyPopup({ sendDataToParent, date }) {
+registerLocale("fr", fr);
+
+function MyPopup(props, { sendDataToParent, date }) {
   const [open, setOpen] = useState(true);
   const closeModal = () => sendDataToParent("closed");
   let file;
@@ -26,15 +29,15 @@ export default function MyPopup({ sendDataToParent, date }) {
   const fileSelectedHandler = (event) => {
     file = event.target.files[0];
   };
-  //const token = props.posts.key || "there is no token";
+  const token = props.posts.key || "there is no token";
 
   const onSearch = (event) => {
-    //props.addPosts(event);
+    props.addPosts(event);
     const data = new FormData();
     data.append("file", file);
     data.append("description", event.description);
     data.append("date", event.date);
-    //data.append("token", token);
+    data.append("token", token);
     axios
       .post("http://localhost:5000/upload", data)
       .then((res) => {
@@ -100,10 +103,12 @@ export default function MyPopup({ sendDataToParent, date }) {
                           setValue("date", val);
                         }}
                         showTimeSelect
+                        locale="fr"
+                        minDate={new Date()}
                         timeFormat="HH:mm"
                         timeIntervals={15}
                         timeCaption="time"
-                        dateFormat="dd-MM-yyyy h:mm"
+                        dateFormat="dd/MM/yyyy h:mm"
                       />
                     </div>
                     <br />
@@ -130,3 +135,17 @@ export default function MyPopup({ sendDataToParent, date }) {
     </div>
   );
 }
+const mapStateToProps = (state) => {
+  return {
+    posts: state.posts,
+    key: state.posts.key,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addPosts: (event) => dispatch(addPosts(event)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyPopup);
